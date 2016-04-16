@@ -1,8 +1,10 @@
 /*
-DataServeriOS.h
  Arduino JSON Data Server for iOS
+ Data Server iOS
  created by M. Heeres, March 5 2012
- Copyright 2012 M. Heeres
+ last updated; April 16 2016
+ v 2.0.0
+ Copyright 2012-2016 M. Heeres
  
  Library belonging to the Arduino Control app for iOS.
  */
@@ -19,6 +21,7 @@ public:
   DataServeriOS(EthernetServer *server, char *pass, boolean serial, char *Arduino, void (*substitudeLoop)(void),int pwmports[],byte nports,int cfports[],byte ncfports,void(*customfunction)(int),char*(*customdigitalreturn)(int),int crports[],byte ncrports,char*(*customanalogreturn)(int));
   void loop();
   void printValueForDigitalPort(char *value,int port);
+  static int DSNotFound;
 private:
   int *_mac;
   int *_ip;
@@ -41,7 +44,7 @@ private:
   void SetupPorts();
   void WaitForRequest();
   void ParseReceivedRequest();
-  int SetValueForPWMPort(int value, int PWMPort);
+  void SetValueForPWMPort(int value, int PWMPort);
   int ValueForPWMPort(int PWMport);
   boolean InArray(int array[],byte n,int value);
   void JSON_send(char* cmd);
