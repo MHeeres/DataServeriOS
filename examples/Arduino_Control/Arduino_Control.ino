@@ -5,26 +5,22 @@
 /* Arduino Control example
  - Comments are welcome, arduinocontrolapp@gmail.com
  
- Created 18-03-2012 by M. Heeres
+ Created 16-04-2016 by M. Heeres
  */
 
 //***************************************************//
-// MAC address can be anything that is unique within your network.                                                           //
-// IP is the address the Arduino Ethernet Card would respond to.  It needs to be an unused address within your network.      //
-// Security password, limited to 15 characters, use to prevent unauthorized access. Mandatory!                               //
-int macArray[]= {0x00, 0x1E, 0x2A, 0x77, 0x24, 0x02 };
-int ipArray[]= {localip};
+// Security password, limited to 15 characters, use to prevent unauthorized access. Mandatory! //
 char secpass[] = "PASSWORD";
-int Port = localport; // Port 80 is http
+int Port = 80; // Port 80 is http
 //************************************************//
 
-byte mac[]= {macArray[0], macArray[1], macArray[2], macArray[3], macArray[4], macArray[5]};
-byte ip[]= {ipArray[0], ipArray[1], ipArray[2], ipArray[3]};
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+byte ip[]= {0,0,0,0};
 int PWMPorts[] = {6,9};
 int ownFunctionForPorts[] = {5,7};
 int ownReturnForPorts[] = {0,3};
 EthernetServer server(Port);
-DataServeriOS dataServer(&server,secpass,true,"UNO",&substitudeLoop,PWMPorts,2,ownFunctionForPorts,2,&ownFunction,&ownDigitalReturn,ownReturnForPorts,2,&ownAnalogReturn);
+DataServeriOS dataServer(&server,secpass,true,(char*)"UNO",&substitudeLoop,PWMPorts,2,ownFunctionForPorts,2,&ownFunction,&ownDigitalReturn,ownReturnForPorts,2,&ownAnalogReturn);
 /*                        ^        ^      ^      ^        ^            ^      ^        ^            ^      ^              ^                ^          ^      ^
                           |        |      |      |        |            |      |        |            |      |              |                |          |      Pointer to own analog return
                           |        |      |      |        |            |      |        |            |      |              |                |          Number of ports for own return (length of array)
@@ -46,8 +42,8 @@ DataServeriOS dataServer(&server,secpass,true,"UNO",&substitudeLoop,PWMPorts,2,o
 void setup()
 {
   Ethernet.begin(mac,ip);
+  // Enable if debugging is required
   //Serial.begin(9600);
-  // Enable if debugging is required 
 }
 
 void loop()
@@ -67,14 +63,14 @@ void ownFunction(int pin)
   // The app expects a return, you are responcable to provide this here. This should be "1","0" or "\"p255\"" in case of PWM
   // The same value is requested in 'ownDigitalReturn' when getting all values
   // (prefix 'p' indicates to the app that this port is used for PWM)
-  dataServer.printValueForDigitalPort("1",pin);
+  dataServer.printValueForDigitalPort((char*)"1",pin);
 }
 
 char* ownDigitalReturn(int pin)
 {
   // Return "1","0" or "\"p255\""
   // (prefix 'p' indicates to the app that this port is used for PWM)
-  return "1";
+  return (char *)"1";
 }
 
 char* ownAnalogReturn(int pin)
@@ -82,7 +78,7 @@ char* ownAnalogReturn(int pin)
   // Return a value for the previously defined ports
   if (pin == 0) {
     // Return a text value, or variable stored alsewhere
-    return "Door open";
+    return (char *)"Door open";
   }
   else if (pin == 3) {
     char t[128];
@@ -90,4 +86,5 @@ char* ownAnalogReturn(int pin)
     sprintf(t,"%d\u00B0C", analogRead(3));
     return t;
   }
+  else return (char*)"";
 }

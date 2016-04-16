@@ -1,11 +1,16 @@
 /*
  Arduino JSON Data Server for iOS
+ Data Server iOS
  created by M. Heeres, March 5 2012
- Copyright 2012 M. Heeres
+ last updated; April 16 2016
+ v 2.0.0
+ Copyright 2012-2016 M. Heeres
  
  Library belonging to the Arduino Control app for iOS.
  */
 #include "DataServeriOS.h"
+
+int DataServeriOS::DSNotFound = -1000;
 
 #define bufferMax 128
 int bufferSize;
@@ -148,7 +153,7 @@ void DataServeriOS::ParseReceivedRequest()
   }
 }
 
-int DataServeriOS::SetValueForPWMPort(int value, int PWMPort)
+void DataServeriOS::SetValueForPWMPort(int value, int PWMPort)
 {
   for (int i=0;i<_nPWMports;i++) {
     if (_PWMPorts[i] == PWMPort) {
@@ -159,11 +164,13 @@ int DataServeriOS::SetValueForPWMPort(int value, int PWMPort)
 
 int DataServeriOS::ValueForPWMPort(int PWMport)
 {
+  int v = DataServeriOS::DSNotFound;
   for (int i=0;i<_nPWMports;i++) {
     if (_PWMPorts[i] == PWMport) {
-      return _PWMValues[i];
+      v = _PWMValues[i];
     }
   }
+  return v;
 }
 
 boolean DataServeriOS::InArray(int array[],byte n,int value)
@@ -320,7 +327,7 @@ void DataServeriOS::RemotePWMWrite()
   int value = atoi(action);
   analogWrite(pin,value);
   SetValueForPWMPort(value,pin);
-  JSON_send("PWMWrite");
+  JSON_send((char *)"PWMWrite");
 }
 
 void DataServeriOS::printValueForDigitalPort(char *value,int port)
